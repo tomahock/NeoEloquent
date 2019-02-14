@@ -27,12 +27,44 @@ Add the package to your `composer.json` and run `composer update`.
 
 ### Laravel 5
 
+#### 5.6
+
+```json
+{
+    "require": {
+        "vinelab/neoeloquent": "^1.4.6"
+    }
+}
+```
+
+
+#### 5.5
+
+```json
+{
+    "require": {
+        "vinelab/neoeloquent": "^1.4.5"
+    }
+}
+```
+
+
+#### 5.4
+
+```json
+{
+    "require": {
+        "vinelab/neoeloquent": "1.4.3"
+    }
+}
+```
+
 #### 5.3
 
 ```json
 {
     "require": {
-        "vinelab/neoeloquent": "1.4.*"
+        "vinelab/neoeloquent": "1.4.2"
     }
 }
 ```
@@ -102,10 +134,10 @@ Add the connection defaults:
 'connections' => [
     'neo4j' => [
         'driver' => 'neo4j',
-        'host'   => 'localhost',
-        'port'   => '7474',
-        'username' => null,
-        'password' => null
+        'host'   => env('DB_HOST', 'localhost'),
+        'port'   => env('DB_PORT', '7474'),
+        'username' => env('DB_USERNAME', null),
+        'password' => env('DB_PASSWORD', null)
     ]
 ]
 ```
@@ -119,10 +151,10 @@ For Lumen you need to create a new folder called `config` in the application roo
 return ['connections' => [
             'neo4j' => [
                 'driver' => 'neo4j',
-                'host'   => 'localhost',
-                'port'   => '7474',
-                'username' => null,
-                'password' => null
+                'host'   => env('DB_HOST', 'localhost'),
+                'port'   => env('DB_PORT', '7474'),
+                'username' => env('DB_USERNAME', null),
+                'password' => env('DB_PASSWORD', null)
             ]
         ]
     ];

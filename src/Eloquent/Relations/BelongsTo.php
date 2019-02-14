@@ -54,9 +54,9 @@ class BelongsTo extends OneRelation {
             // Set the parent node's placeholder as the RETURN key.
             $this->query->getQuery()->from = array($parentNode);
             // Build the MATCH ()<-[]-() Cypher clause.
-            $this->query->matchIn($this->parent, $this->related, $this->relation, $this->foreignKey, $this->otherKey, $this->parent->{$this->otherKey});
+            $this->query->matchIn($this->parent, $this->related, $this->relation, $this->foreignKey, $this->ownerKey, $this->parent->{$this->ownerKey});
             // Add WHERE clause over the parent node's matching key = value.
-            $this->query->where($this->otherKey, '=', $this->parent->{$this->otherKey});
+            $this->query->where($this->ownerKey, '=', $this->parent->{$this->ownerKey});
         }
     }
 
@@ -87,9 +87,9 @@ class BelongsTo extends OneRelation {
         // Set the parent node's placeholder as the RETURN key.
         $this->query->getQuery()->from = array($parentNode);
         // Build the MATCH ()<-[]-() Cypher clause.
-        $this->query->matchIn($this->parent, $this->related, $this->relation, $this->foreignKey, $this->otherKey, $this->parent->{$this->otherKey});
+        $this->query->matchIn($this->parent, $this->related, $this->relation, $this->foreignKey, $this->ownerKey, $this->parent->{$this->ownerKey});
         // Add WHERE clause over the parent node's matching keys [values...].
-        $this->query->whereIn($this->otherKey, $this->getEagerModelKeys($models));
+        $this->query->whereIn($this->ownerKey, $this->getEagerModelKeys($models));
     }
 
     /**
@@ -106,6 +106,28 @@ class BelongsTo extends OneRelation {
         // Indicate a unique relation since this only involves one other model.
         $unique = true;
         return new EdgeIn($this->query, $this->parent, $model, $this->foreignKey, $attributes, $unique);
+    }
+    
+    /**
+     * Get the plain foreign key.
+     *
+     * @return string
+     */
+    public function getForeignKeyName()
+    {
+        $segments = explode('.', $this->getQualifiedForeignKeyName());
+
+        return end($segments);
+    }
+
+    /**
+     * Get the foreign key for the relationship.
+     *
+     * @return string
+     */
+    public function getQualifiedForeignKeyName()
+    {
+        return $this->foreignKey;
     }
 
 }

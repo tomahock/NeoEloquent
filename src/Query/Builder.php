@@ -4,7 +4,7 @@ use Closure;
 use DateTime;
 use Carbon\Carbon;
 use Vinelab\NeoEloquent\Connection;
-use Illuminadte\Database\Query\Expression;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Eloquent\Collection;
 use Vinelab\NeoEloquent\Query\Grammars\Grammar;
 use Vinelab\NeoEloquent\Query\Processors\Processor;
@@ -18,7 +18,7 @@ class Builder extends IlluminateQueryBuilder {
      *
      * @var Vinelab\NeoEloquent\Connection
      */
-    protected $connection;
+    public $connection;
 
     /**
      * The database active client handler
@@ -46,7 +46,7 @@ class Builder extends IlluminateQueryBuilder {
      *
      * @var array
      */
-    protected $bindings = array(
+    public $bindings = array(
         'matches'=> [],
         'select' => [],
         'join'   => [],
@@ -60,13 +60,14 @@ class Builder extends IlluminateQueryBuilder {
 	 *
 	 * @var array
 	 */
-    protected $operators = array(
-        '+', '-', '*', '/', '%', '^',    // Mathematical
-        '=', '<>', '<', '>', '<=', '>=', // Comparison
+    public $operators = array(
+        '+', '-', '*', '/', '%', '^',          // Mathematical
+        '=', '<>', '<', '>', '<=', '>=',       // Comparison
         'is null', 'is not null',
-        'and', 'or', 'xor', 'not',       // Boolean
-        'in', '[x]', '[x .. y]',         // Collection
-        '=~'                             // Regular Expression
+        'and', 'or', 'xor', 'not',             // Boolean
+        'in', '[x]', '[x .. y]',               // Collection
+        '=~',                                  // Regular Expression
+        'starts with', 'ends with', 'contains' // String matching
     );
 
     /**
@@ -200,6 +201,24 @@ class Builder extends IlluminateQueryBuilder {
     }
 
     /**
+     * Removes the order by clause when counting for the paginator.
+     * @author Gaba93
+     */
+    private function backupFieldsForCount() {
+        $this->orders_backup = $this->orders;
+        $this->orders = null;
+    }
+
+    /**
+     * Readds the order clause.
+     * @author Gaba93
+     */
+    private function restoreFieldsForCount() {
+        $this->orders = $this->orders_backup;
+        $this->orders_backup = null;
+    }
+
+    /**
     * Get the count of the total records for the paginator.
     *
     * @param  array  $columns
@@ -210,6 +229,7 @@ class Builder extends IlluminateQueryBuilder {
         $this->backupFieldsForCount();
 
         $this->aggregate = ['function' => 'count', 'columns' => $columns];
+
 
         $results = $this->get();
 
